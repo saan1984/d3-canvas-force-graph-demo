@@ -1,0 +1,14 @@
+{
+  "name": "@d3/force-directed-graph-canvas/2",
+  "main": "cf546238ef8e2189@246.js",
+  "version": "246.0.0",
+  "homepage": "https://observablehq.com/@d3/force-directed-graph-canvas/2",
+  "author": {
+    "name": "D3",
+    "url": "https://observablehq.com/@d3"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "@observablehq/runtime": "4 - 5"
+  }
+}
