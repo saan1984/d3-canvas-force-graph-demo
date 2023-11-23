@@ -29,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
   context.scale(dpi, dpi);
 
   function draw() {
-    console.log("canvas", canvas);
     context.clearRect(0, 0, width, height);
 
     context.save();
@@ -50,18 +49,87 @@ document.addEventListener("DOMContentLoaded", () => {
       context.strokeStyle = "#fff";
       context.fill();
       context.stroke();
+      writeTextInNode(node);
     });
     context.restore();
   }
 
-  function drawLink(d) {
+    function drawLink(d) {
     context.moveTo(d.source.x, d.source.y);
     context.lineTo(d.target.x, d.target.y);
   }
 
-  function drawNode(d) {
-    context.moveTo(d.x + 5, d.y);
-    context.arc(d.x, d.y, 5, 0, 2 * Math.PI);
+  const circles = [];
+
+  function drawNode(node) {
+    const radius = 20;
+
+    context.globalAlpha = 0.2;
+    context.beginPath();
+    context.arc(node.x, node.y, radius, 0, 2 * Math.PI);
+    context.fillStyle = "#fff";
+    context.fill();
+    context.globalAlpha = 1;
+
+    // Store information about the circle
+    circles.push({
+      x: node.x,
+      y: node.y,
+      radius: radius,
+      id: node.id,
+    });
+
+  }
+
+  function debounce(func, delay) {
+    let timeoutId;
+    return function (...args) {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      timeoutId = setTimeout(() => {
+        func(...args);
+      }, delay);
+    };
+  }
+
+// Debounced click event handler
+  const debouncedClickHandler = debounce(handleClick, 300);
+
+
+  function handleClick(event) {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    const maxDistance = 20; // Adjust the distance threshold as needed
+
+    // Check if the click is inside any node
+    const clickedNode = circles.find((circle) => {
+      const dx = mouseX - circle.x;
+      const dy = mouseY - circle.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      // Check if the click is within a certain distance of the circle
+      return distance < maxDistance;
+    });
+
+    // Log something to the console when a node is clicked
+    if (clickedNode) {
+      console.log("Node clicked:", clickedNode.id);
+    }
+  }
+
+// Add a debounced click event to the canvas
+  canvas.addEventListener("click", debouncedClickHandler);
+  function writeTextInNode(node) {
+    const text = "sandeep";
+    // Display "sandeep" text inside the node
+    context.fillStyle = "#fff";
+    context.font = "14px sans-serif"; // Adjust the font size and family as needed
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillText(node.id, node.x, node.y);
   }
 
   d3.select(canvas)
